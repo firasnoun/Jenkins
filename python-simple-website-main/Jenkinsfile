@@ -20,7 +20,7 @@ pipeline {
                 // Starts Flask application
                 // The 'sudo' command is not recommended in Jenkins pipelines for security reasons.
                 // Instead, you should ensure Jenkins has the appropriate permissions, if possible.
-                sh 'python3 app.py'
+                sh 'nohup python3 app.py'
                 // Note: Running Flask with `app.run()` is not recommended for production
             }
         }
