@@ -1,4 +1,4 @@
-pipeline {
+\pipeline {
     agent any
 
     stages {
@@ -8,45 +8,28 @@ pipeline {
             }
         }
 
-        stage('Setup Python Environment') {
-            steps {
-                echo 'Setting up Python environment...'
-                sh 'sudo python3 -m venv venv' // Create a virtual environment
-                sh '. venv/bin/activate' // Activate virtual environment
-                sh 'pip install -r requirements.txt' // Install dependencies from requirements.txt
-            }
-        }
+        // 'Setup' stage might not be necessary if you don't have a requirements.txt
+        // and your application does not need any additional dependencies to be installed
 
-        stage('Run Tests') {
-            steps {
-                echo 'Running tests...'
-                sh '. venv/bin/activate' // Ensure the virtual environment is activated
-                // Add commands to run your tests. For example, you might use pytest or another tool.
-                // sh 'pytest'
-                echo 'No tests specified' // Remove this line once you add your test commands
-            }
-        }
+        // If you have tests, you could include a 'Test' stage here
+        // Make sure you have a testing framework installed and configured if you wish to run tests
 
-        stage('Deploy') {
+        stage('Run') {
             steps {
-                echo 'Deploying the application...'
-                sh '. venv/bin/activate' // Ensure the virtual environment is activated
-                sh 'nohup python3 app.py &'
+                echo 'Starting Flask application...'
+                // Starts Flask application
+                // The 'sudo' command is not recommended in Jenkins pipelines for security reasons.
+                // Instead, you should ensure Jenkins has the appropriate permissions, if possible.
+                sh 'nohup python3 app.py > app.log 2>&1 &'
+                // Note: Running Flask with `app.run()` is not recommended for production
             }
         }
     }
 
     post {
         always {
-            echo 'Cleaning up...'
-            sh 'deactivate' // If using a virtual environment
-            sh 'rm -rf venv' // Optional: remove the virtual environment
-        }
-        success {
-            echo 'Pipeline succeeded!'
-        }
-        failure {
-            echo 'Pipeline failed!'
+            echo 'Pipeline has finished executing.'
+            // If you had a setup stage that needed cleanup, you would put the commands here
         }
     }
 }
